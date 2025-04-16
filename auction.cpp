@@ -13,9 +13,9 @@
 
 using namespace std;
 
-
+// -------------------------------------------
 // PlayerImageWindow: Shows player image using SFML in a separate thread
-
+// -------------------------------------------
 class PlayerImageWindow {
 public:
     PlayerImageWindow() : window(nullptr), shouldClose(false) {
@@ -28,10 +28,10 @@ public:
     ~PlayerImageWindow() {
         // Signal to close the window and join the thread
         shouldClose = true;
-        if(window) {
+        if (window) {
             window->close();
         }
-        if(renderThread.joinable())
+        if (renderThread.joinable())
             renderThread.join();
     }
 
@@ -52,7 +52,7 @@ public:
             sf::Image img;
             img.create(300, 350, sf::Color::Red);
             texture.loadFromImage(img);
-        } 
+        }
         sprite.setTexture(texture);
         // Scale the sprite to approximately 300x350 if needed.
         float scaleX = 300.f / texture.getSize().x;
@@ -92,9 +92,9 @@ private:
     }
 };
 
-// ******************************************************************
-// Player Class
-// ******************************************************************
+
+// Abstract Player Class
+
 class Player {
 public:
     string name;
@@ -111,12 +111,27 @@ public:
 
     Player(string name, int basePrice, int age, string role, int matches, int runs,
            double strikeRate, int wickets, double bowlingEconomy, int catches, double points)
-           : name(name), basePrice(basePrice), age(age), role(role), matches(matches),
-             runs(runs), strikeRate(strikeRate), wickets(wickets),
-             bowlingEconomy(bowlingEconomy), catches(catches), points(points) {}
+        : name(name), basePrice(basePrice), age(age), role(role), matches(matches),
+          runs(runs), strikeRate(strikeRate), wickets(wickets),
+          bowlingEconomy(bowlingEconomy), catches(catches), points(points) {}
 
-    // Print the player's stats
-    string toString() const {
+    // Pure virtual function forces derived classes to implement their own toString()
+    virtual string toString() const = 0;
+
+    virtual ~Player() {}
+};
+
+
+// Derived Players Class (concrete implementation)
+
+class Players : public Player {
+public:
+    Players(string name, int basePrice, int age, string role, int matches, int runs,
+            double strikeRate, int wickets, double bowlingEconomy, int catches, double points)
+        : Player(name, basePrice, age, role, matches, runs, strikeRate, wickets, bowlingEconomy, catches, points) {}
+
+    // Override the pure virtual function
+    string toString() const override {
         stringstream ss;
         ss << "Name: " << name
            << ", Base Price: " << basePrice
@@ -133,44 +148,50 @@ public:
 };
 
 
-// Players Class
+// Container Class for Players
 
-class Players {
+class PlayerList {
 public:
-    vector<Player> playerList;
+    vector<Player*> playerList;
 
-    Players() {
-        // Adding players with stats
-        playerList.push_back(Player("Virat Kohli", 200, 36, "Batsman", 258, 8252, 132.5, 4, 8.8, 215, 9.9));
-        playerList.push_back(Player("MS Dhoni", 180, 43, "Wicket-Keeper", 271, 5373, 137.99, 0, 0.0, 315, 9.8));
-        playerList.push_back(Player("Rohit Sharma", 180, 37, "Batsman", 262, 6684, 131.19, 15, 8.02, 197, 9.8));
-        playerList.push_back(Player("Jasprit Bumrah", 150, 31, "Bowler", 135, 68, 86.08, 166, 7.33, 80, 9.6));
-        playerList.push_back(Player("KL Rahul", 140, 32, "Batsman/Wicket-Keeper", 136, 4883, 135.61, 0, 0.0, 90, 9.0));
-        playerList.push_back(Player("Suryakumar Yadav", 150, 34, "Batsman", 156, 3833, 115.58, 1, 0.0, 50, 9.2));
-        playerList.push_back(Player("Hardik Pandya", 150, 31, "All-Rounder", 142, 2608, 145.0, 74, 9.0, 45, 9.0));
-        playerList.push_back(Player("Shubman Gill", 100, 25, "Batsman", 109, 3424, 128.4, 0, 0.0, 25, 8.5));
-        playerList.push_back(Player("Rishabh Pant", 110, 27, "Wicket-Keeper", 118, 3387, 145.0, 2, 0.0, 30, 8.8));
-        playerList.push_back(Player("Bhuvneshwar Kumar", 160, 35, "Bowler", 181, 300, 120.0, 187, 6.5, 40, 8.7));
-        playerList.push_back(Player("Ravindra Jadeja", 190, 36, "All-Rounder", 247, 5002, 130.5, 164, 6.7, 55, 9.3));
-        playerList.push_back(Player("Yuzvendra Chahal", 130, 34, "Bowler", 165, 200, 100.0, 207, 7.5, 30, 8.5));
-        playerList.push_back(Player("Kuldeep Yadav", 110, 30, "Bowler", 89, 150, 110.0, 97, 7.2, 25, 8.2));
-        playerList.push_back(Player("Sanju Samson", 130, 30, "Wicket-Keeper", 120, 4617, 135.5, 1, 0.0, 35, 8.6));
-        playerList.push_back(Player("Abhishek Sharma", 60, 24, "All-Rounder", 69, 1568, 160.0, 20, 7.1, 20, 8));
-        playerList.push_back(Player("Axar Patel", 100, 31, "All-Rounder", 155, 1720, 125.0, 80, 6.4, 28, 8.4));
-        playerList.push_back(Player("Shreyas Iyer", 120, 30, "Batsman", 120, 3377, 132.0, 0, 0.0, 30, 8.6));
-        playerList.push_back(Player("Mohammed Shami", 140, 34, "Bowler", 116, 100, 120.0, 132, 7.0, 35, 8.5));
-        playerList.push_back(Player("Mohammed Siraj", 90, 31, "Bowler", 99, 109, 125.0, 99, 7.3, 20, 8.3));
-        playerList.push_back(Player("Ishan Kishan", 100, 26, "Wicket-Keeper", 111, 2780, 145.0, 1, 0.0, 25, 8.5));
+    PlayerList() {
+        // Adding players with stats using the derived Players class
+        playerList.push_back(new Players("Virat Kohli", 200, 36, "Batsman", 258, 8252, 132.5, 4, 8.8, 215, 9.9));
+        playerList.push_back(new Players("MS Dhoni", 180, 43, "Wicket-Keeper", 271, 5373, 137.99, 0, 0.0, 315, 9.8));
+        playerList.push_back(new Players("Rohit Sharma", 180, 37, "Batsman", 262, 6684, 131.19, 15, 8.02, 197, 9.8));
+        playerList.push_back(new Players("Jasprit Bumrah", 150, 31, "Bowler", 135, 68, 86.08, 166, 7.33, 80, 9.6));
+        playerList.push_back(new Players("KL Rahul", 140, 32, "Batsman/Wicket-Keeper", 136, 4883, 135.61, 0, 0.0, 90, 9.0));
+        playerList.push_back(new Players("Suryakumar Yadav", 150, 34, "Batsman", 156, 3833, 115.58, 1, 0.0, 50, 9.2));
+        playerList.push_back(new Players("Hardik Pandya", 150, 31, "All-Rounder", 142, 2608, 145.0, 74, 9.0, 45, 9.0));
+        playerList.push_back(new Players("Shubman Gill", 100, 25, "Batsman", 109, 3424, 128.4, 0, 0.0, 25, 8.5));
+        playerList.push_back(new Players("Rishabh Pant", 110, 27, "Wicket-Keeper", 118, 3387, 145.0, 2, 0.0, 30, 8.8));
+        playerList.push_back(new Players("Bhuvneshwar Kumar", 160, 35, "Bowler", 181, 300, 120.0, 187, 6.5, 40, 8.7));
+        playerList.push_back(new Players("Ravindra Jadeja", 190, 36, "All-Rounder", 247, 5002, 130.5, 164, 6.7, 55, 9.3));
+        playerList.push_back(new Players("Yuzvendra Chahal", 130, 34, "Bowler", 165, 200, 100.0, 207, 7.5, 30, 8.5));
+        playerList.push_back(new Players("Kuldeep Yadav", 110, 30, "Bowler", 89, 150, 110.0, 97, 7.2, 25, 8.2));
+        playerList.push_back(new Players("Sanju Samson", 130, 30, "Wicket-Keeper", 120, 4617, 135.5, 1, 0.0, 35, 8.6));
+        playerList.push_back(new Players("Abhishek Sharma", 60, 24, "All-Rounder", 69, 1568, 160.0, 20, 7.1, 20, 8));
+        playerList.push_back(new Players("Axar Patel", 100, 31, "All-Rounder", 155, 1720, 125.0, 80, 6.4, 28, 8.4));
+        playerList.push_back(new Players("Shreyas Iyer", 120, 30, "Batsman", 120, 3377, 132.0, 0, 0.0, 30, 8.6));
+        playerList.push_back(new Players("Mohammed Shami", 140, 34, "Bowler", 116, 100, 120.0, 132, 7.0, 35, 8.5));
+        playerList.push_back(new Players("Mohammed Siraj", 90, 31, "Bowler", 99, 109, 125.0, 99, 7.3, 20, 8.3));
+        playerList.push_back(new Players("Ishan Kishan", 100, 26, "Wicket-Keeper", 111, 2780, 145.0, 1, 0.0, 25, 8.5));
 
         // Shuffle the players list using C++11 random facilities
         auto rng = default_random_engine(static_cast<unsigned>(time(nullptr)));
         shuffle(playerList.begin(), playerList.end(), rng);
     }
 
+    ~PlayerList() {
+        for (Player* p : playerList) {
+            delete p;
+        }
+    }
+
     // Display all players with stats
     void displayPlayers() {
         for (const auto &p : playerList) {
-            cout << p.toString() << "\n";
+            cout << p->toString() << "\n";
         }
     }
 };
@@ -180,7 +201,6 @@ public:
 
 class Teams {
 private:
-    // Four teams (indices 0 to 3)
     int actual_Purse[4];
 public:
     vector<string> MI;
@@ -377,15 +397,11 @@ public:
     }
 };
 
-// Define the static member for Auction (one instance of the image window)
 PlayerImageWindow Auction::imageWindow;
-
-
-// Main Function
 
 int main() {
     Teams t;
-    Players p;
+    PlayerList pList;
     Calculate cal;
 
     int initialPurse;
@@ -401,10 +417,10 @@ int main() {
          << purseArray[2] << ", " << purseArray[3] << " ]\n";
 
     // Run auction for up to 20 players (or fewer if less available)
-    int nPlayers = p.playerList.size();
+    int nPlayers = pList.playerList.size();
     int auctionCount = (nPlayers < 20) ? nPlayers : 20;
     for (int i = 0; i < auctionCount; i++) {
-        Auction::bidding(p.playerList[i], t, cal);
+        Auction::bidding(*pList.playerList[i], t, cal);
     }
 
     cout << "\nTeam Squads: \n";
@@ -425,7 +441,6 @@ int main() {
              << "KKR -> "  << cal.getTotalPoints(cal.KKRpoints) << "\n";
     }
 
-    // Give some time before ending so that the SFML window remains viewable.
     cout << "\nPress ENTER to exit the program.";
     cin.ignore();
     cin.get();
