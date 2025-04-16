@@ -13,9 +13,9 @@
 
 using namespace std;
 
-// ******************************************************************
+
 // PlayerImageWindow: Shows player image using SFML in a separate thread
-// ******************************************************************
+
 class PlayerImageWindow {
 public:
     PlayerImageWindow() : window(nullptr), shouldClose(false) {
@@ -52,9 +52,7 @@ public:
             sf::Image img;
             img.create(300, 350, sf::Color::Red);
             texture.loadFromImage(img);
-        } else {
-            cout << "[Image Display] Loaded image for " << playerName << " from " << imagePath << "\n";
-        }
+        } 
         sprite.setTexture(texture);
         // Scale the sprite to approximately 300x350 if needed.
         float scaleX = 300.f / texture.getSize().x;
@@ -134,9 +132,9 @@ public:
     }
 };
 
-// ******************************************************************
+
 // Players Class
-// ******************************************************************
+
 class Players {
 public:
     vector<Player> playerList;
@@ -177,9 +175,9 @@ public:
     }
 };
 
-// ******************************************************************
+
 // Teams Class: Manages team purse and squad information
-// ******************************************************************
+
 class Teams {
 private:
     // Four teams (indices 0 to 3)
@@ -256,9 +254,9 @@ public:
     }
 };
 
-// ******************************************************************
+
 // Calculate Class: Keeps track of team points
-// ******************************************************************
+
 class Calculate {
 public:
     vector<double> MIpoints;
@@ -285,9 +283,9 @@ public:
     }
 };
 
-// ******************************************************************
+
 // Auction Class: Handles bidding and auction logic
-// ******************************************************************
+
 class Auction {
 public:
     // Use a single static instance for the player image window.
@@ -382,9 +380,9 @@ public:
 // Define the static member for Auction (one instance of the image window)
 PlayerImageWindow Auction::imageWindow;
 
-// ******************************************************************
+
 // Main Function
-// ******************************************************************
+
 int main() {
     Teams t;
     Players p;
