@@ -143,26 +143,26 @@ public:
 
     Players() {
         // Adding players with stats
-        playerList.push_back(Player("Virat Kohli", 200, 32, "Batsman", 250, 7500, 130.5, 5, 0.0, 50, 9.9));
-        playerList.push_back(Player("MS Dhoni", 180, 39, "Wicket-Keeper", 350, 5000, 125.3, 10, 0.0, 100, 9.8));
-        playerList.push_back(Player("Rohit Sharma", 180, 34, "Batsman", 300, 7200, 135.8, 2, 0.0, 70, 9.8));
-        playerList.push_back(Player("Jasprit Bumrah", 150, 28, "Bowler", 150, 250, 145.6, 200, 6.8, 30, 9.6));
-        playerList.push_back(Player("KL Rahul", 140, 31, "Batsman/Wicket-Keeper", 150, 4800, 140.2, 3, 0.0, 40, 9.0));
-        playerList.push_back(Player("Suryakumar Yadav", 150, 30, "Batsman", 120, 3600, 155.7, 1, 0.0, 50, 9.2));
-        playerList.push_back(Player("Hardik Pandya", 150, 28, "All-Rounder", 120, 2200, 145.0, 50, 7.0, 45, 9.0));
-        playerList.push_back(Player("Shubman Gill", 100, 23, "Batsman", 80, 2200, 128.4, 0, 0.0, 25, 8.5));
-        playerList.push_back(Player("Rishabh Pant", 110, 26, "Wicket-Keeper", 100, 2900, 145.0, 2, 0.0, 30, 8.8));
-        playerList.push_back(Player("Bhuvneshwar Kumar", 160, 33, "Bowler", 130, 300, 120.0, 180, 6.5, 40, 8.7));
-        playerList.push_back(Player("Ravindra Jadeja", 190, 34, "All-Rounder", 170, 2500, 130.5, 120, 6.7, 55, 9.3));
-        playerList.push_back(Player("Yuzvendra Chahal", 130, 33, "Bowler", 100, 200, 100.0, 160, 7.5, 30, 8.5));
-        playerList.push_back(Player("Kuldeep Yadav", 110, 30, "Bowler", 80, 150, 110.0, 140, 7.2, 25, 8.2));
-        playerList.push_back(Player("Sanju Samson", 130, 29, "Wicket-Keeper", 120, 3100, 135.5, 1, 0.0, 35, 8.6));
-        playerList.push_back(Player("Abhishek Sharma", 60, 23, "All-Rounder", 70, 1500, 140.0, 20, 7.1, 20, 8));
-        playerList.push_back(Player("Axar Patel", 100, 31, "All-Rounder", 90, 1400, 125.0, 80, 6.4, 28, 8.4));
-        playerList.push_back(Player("Shreyas Iyer", 120, 29, "Batsman", 110, 3200, 132.0, 0, 0.0, 30, 8.6));
-        playerList.push_back(Player("Mohammed Shami", 140, 33, "Bowler", 120, 100, 120.0, 150, 7.0, 35, 8.8));
-        playerList.push_back(Player("Mohammed Siraj", 90, 29, "Bowler", 80, 70, 125.0, 100, 7.3, 20, 8.3));
-        playerList.push_back(Player("Ishan Kishan", 100, 26, "Wicket-Keeper", 90, 2400, 145.0, 1, 0.0, 25, 8.5));
+        playerList.push_back(Player("Virat Kohli", 200, 36, "Batsman", 258, 8252, 132.5, 4, 8.8, 215, 9.9));
+        playerList.push_back(Player("MS Dhoni", 180, 43, "Wicket-Keeper", 271, 5373, 137.99, 0, 0.0, 315, 9.8));
+        playerList.push_back(Player("Rohit Sharma", 180, 37, "Batsman", 262, 6684, 131.19, 15, 8.02, 197, 9.8));
+        playerList.push_back(Player("Jasprit Bumrah", 150, 31, "Bowler", 135, 68, 86.08, 166, 7.33, 80, 9.6));
+        playerList.push_back(Player("KL Rahul", 140, 32, "Batsman/Wicket-Keeper", 136, 4883, 135.61, 0, 0.0, 90, 9.0));
+        playerList.push_back(Player("Suryakumar Yadav", 150, 34, "Batsman", 156, 3833, 115.58, 1, 0.0, 50, 9.2));
+        playerList.push_back(Player("Hardik Pandya", 150, 31, "All-Rounder", 142, 2608, 145.0, 74, 9.0, 45, 9.0));
+        playerList.push_back(Player("Shubman Gill", 100, 25, "Batsman", 109, 3424, 128.4, 0, 0.0, 25, 8.5));
+        playerList.push_back(Player("Rishabh Pant", 110, 27, "Wicket-Keeper", 118, 3387, 145.0, 2, 0.0, 30, 8.8));
+        playerList.push_back(Player("Bhuvneshwar Kumar", 160, 35, "Bowler", 181, 300, 120.0, 187, 6.5, 40, 8.7));
+        playerList.push_back(Player("Ravindra Jadeja", 190, 36, "All-Rounder", 247, 5002, 130.5, 164, 6.7, 55, 9.3));
+        playerList.push_back(Player("Yuzvendra Chahal", 130, 34, "Bowler", 165, 200, 100.0, 207, 7.5, 30, 8.5));
+        playerList.push_back(Player("Kuldeep Yadav", 110, 30, "Bowler", 89, 150, 110.0, 97, 7.2, 25, 8.2));
+        playerList.push_back(Player("Sanju Samson", 130, 30, "Wicket-Keeper", 120, 4617, 135.5, 1, 0.0, 35, 8.6));
+        playerList.push_back(Player("Abhishek Sharma", 60, 24, "All-Rounder", 69, 1568, 160.0, 20, 7.1, 20, 8));
+        playerList.push_back(Player("Axar Patel", 100, 31, "All-Rounder", 155, 1720, 125.0, 80, 6.4, 28, 8.4));
+        playerList.push_back(Player("Shreyas Iyer", 120, 30, "Batsman", 120, 3377, 132.0, 0, 0.0, 30, 8.6));
+        playerList.push_back(Player("Mohammed Shami", 140, 34, "Bowler", 116, 100, 120.0, 132, 7.0, 35, 8.5));
+        playerList.push_back(Player("Mohammed Siraj", 90, 31, "Bowler", 99, 109, 125.0, 99, 7.3, 20, 8.3));
+        playerList.push_back(Player("Ishan Kishan", 100, 26, "Wicket-Keeper", 111, 2780, 145.0, 1, 0.0, 25, 8.5));
 
         // Shuffle the players list using C++11 random facilities
         auto rng = default_random_engine(static_cast<unsigned>(time(nullptr)));
