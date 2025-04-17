@@ -10,6 +10,8 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <X11/Xlib.h>
+
 
 using namespace std;
 
@@ -17,84 +19,105 @@ using namespace std;
 // PlayerImageWindow: Shows player image using SFML in a separate thread
 // -------------------------------------------
 class PlayerImageWindow {
-public:
-    PlayerImageWindow() : window(nullptr), shouldClose(false) {
-        // Start the render thread
-        renderThread = std::thread(&PlayerImageWindow::renderLoop, this);
-        // Let the thread start up
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    ~PlayerImageWindow() {
-        // Signal to close the window and join the thread
-        shouldClose = true;
-        if (window) {
-            window->close();
+    public:
+        PlayerImageWindow() : window(nullptr), shouldClose(false) {
+            // Load default image
+            loadImage("images/no_player.jpg", true);
+    
+            // Start the render thread
+            renderThread = std::thread(&PlayerImageWindow::renderLoop, this);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
-        if (renderThread.joinable())
-            renderThread.join();
-    }
-
-    // Loads the image for the given player name and updates the texture.
-    void showPlayerImage(const string &playerName) {
-        // Build file path by replacing spaces with underscores
-        string formattedName = playerName;
-        replace(formattedName.begin(), formattedName.end(), ' ', '_');
-        string imagePath = "images/" + formattedName + ".jpg"; // e.g., images/Virat_Kohli.jpg
-
-        // Lock the mutex while updating texture and sprite
-        std::lock_guard<std::mutex> lock(mtx);
-
-        if (!texture.loadFromFile(imagePath)) {
-            // If image could not be loaded, display a default "not found" message.
-            cout << "[Image Display] Image not found for " << playerName << "\n";
-            // Create a red placeholder image
-            sf::Image img;
-            img.create(300, 350, sf::Color::Red);
-            texture.loadFromImage(img);
+    
+        ~PlayerImageWindow() {
+            shouldClose = true;
+            if (window) window->close();
+            if (renderThread.joinable()) renderThread.join();
         }
-        sprite.setTexture(texture);
-        // Scale the sprite to approximately 300x350 if needed.
-        float scaleX = 300.f / texture.getSize().x;
-        float scaleY = 350.f / texture.getSize().y;
-        sprite.setScale(scaleX, scaleY);
-    }
-
-private:
-    sf::RenderWindow *window;
-    sf::Texture texture;
-    sf::Sprite sprite;
-    std::thread renderThread;
-    std::mutex mtx;
-    bool shouldClose;
-
-    // This function runs in a separate thread and handles the SFML event loop
-    void renderLoop() {
-        window = new sf::RenderWindow(sf::VideoMode(350, 400), "Player Image");
-        window->setFramerateLimit(30);
-        while (window->isOpen() && !shouldClose) {
-            sf::Event event;
-            while (window->pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
-                    window->close();
+    
+        void showPlayerImage(const std::string &playerName) {
+            std::string formattedName = playerName;
+            std::replace(formattedName.begin(), formattedName.end(), ' ', '_');
+            std::string imagePath = "images/" + formattedName + ".jpg";
+    
+            std::lock_guard<std::mutex> lock(mtx);
+            if (!loadImage(imagePath, false)) {
+                std::cout << "[Image Display] Image not found for " << playerName << "\n";
+                // Red fallback if player image isn't found
+                sf::Image img;
+                img.create(300, 350, sf::Color::Red);
+                texture.loadFromImage(img);
+                sprite.setTexture(texture, true);
             }
-            window->clear(sf::Color::Black);
-            // Lock to safely read the current sprite
-            {
-                std::lock_guard<std::mutex> lock(mtx);
-                window->draw(sprite);
-            }
-            window->display();
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    
+            adjustSprite();
         }
-        delete window;
-        window = nullptr;
-    }
-};
+    
+    private:
+        sf::RenderWindow* window;
+        sf::Texture texture;
+        sf::Sprite sprite;
+        std::thread renderThread;
+        std::mutex mtx;
+        bool shouldClose;
+    
+        bool loadImage(const std::string& path, bool silent) {
+            if (!texture.loadFromFile(path)) {
+                if (!silent) std::cout << "[Image Display] Failed to load: " << path << "\n";
+                return false;
+            }
+            sprite.setTexture(texture, true);  // reset the texture and re-calculate size
+            return true;
+        }
+    
+        void adjustSprite() {
+            // Get actual texture size
+            float imgWidth = static_cast<float>(texture.getSize().x);
+            float imgHeight = static_cast<float>(texture.getSize().y);
+    
+            // Target display area inside window (300x350)
+            float targetWidth = 300.f;
+            float targetHeight = 350.f;
+    
+            float scaleFactor = std::min(targetWidth / imgWidth, targetHeight / imgHeight);
+            sprite.setScale(scaleFactor, scaleFactor);
+    
+            // Set origin to center of original image
+            sprite.setOrigin(imgWidth / 2.f, imgHeight / 2.f);
+    
+            // Position in center of window (350x400)
+            sprite.setPosition(350.f / 2.f, 400.f / 2.f);
+        }
+    
+        void renderLoop() {
+            window = new sf::RenderWindow(sf::VideoMode(350, 400), "Player Image");
+            window->setFramerateLimit(30);
+    
+            while (window->isOpen() && !shouldClose) {
+                sf::Event event;
+                while (window->pollEvent(event)) {
+                    if (event.type == sf::Event::Closed)
+                        window->close();
+                }
+    
+                window->clear(sf::Color::Black);
+                {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    window->draw(sprite);
+                }
+                window->display();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            }
+    
+            delete window;
+            window = nullptr;
+        }
+    };
+    
 
-
+// -------------------------------------------
 // Abstract Player Class
-
+// -------------------------------------------
 class Player {
 public:
     string name;
@@ -121,9 +144,9 @@ public:
     virtual ~Player() {}
 };
 
-
+// -------------------------------------------
 // Derived Players Class (concrete implementation)
-
+// -------------------------------------------
 class Players : public Player {
 public:
     Players(string name, int basePrice, int age, string role, int matches, int runs,
@@ -147,9 +170,9 @@ public:
     }
 };
 
-
+// -------------------------------------------
 // Container Class for Players
-
+// -------------------------------------------
 class PlayerList {
 public:
     vector<Player*> playerList;
@@ -178,8 +201,8 @@ public:
         playerList.push_back(new Players("Ishan Kishan", 100, 26, "Wicket-Keeper", 111, 2780, 145.0, 1, 0.0, 25, 8.5));
 
         // Shuffle the players list using C++11 random facilities
-        auto rng = default_random_engine(static_cast<unsigned>(time(nullptr)));
-        shuffle(playerList.begin(), playerList.end(), rng);
+        // auto rng = default_random_engine(static_cast<unsigned>(time(nullptr)));
+        // shuffle(playerList.begin(), playerList.end(), rng);
     }
 
     ~PlayerList() {
@@ -196,9 +219,9 @@ public:
     }
 };
 
-
+// -------------------------------------------
 // Teams Class: Manages team purse and squad information
-
+// -------------------------------------------
 class Teams {
 private:
     int actual_Purse[4];
@@ -274,9 +297,9 @@ public:
     }
 };
 
-
+// -------------------------------------------
 // Calculate Class: Keeps track of team points
-
+// -------------------------------------------
 class Calculate {
 public:
     vector<double> MIpoints;
@@ -303,9 +326,9 @@ public:
     }
 };
 
-
+// -------------------------------------------
 // Auction Class: Handles bidding and auction logic
-
+// -------------------------------------------
 class Auction {
 public:
     // Use a single static instance for the player image window.
@@ -387,6 +410,7 @@ public:
                         " at Rs. " << currPrice << "\n(If they buy it, they will have Remaining Purse: Rs. " << budget[teamIndex] << ")\n";
                 } else {
                     cout << "Team does not have enough purse left!\n";
+                    continue;
                 }
             } else {
                 cout << "Invalid bid! Enter a number between 1-4, or 0 to stop.\n";
@@ -400,6 +424,10 @@ public:
 PlayerImageWindow Auction::imageWindow;
 
 int main() {
+
+   
+
+  
     Teams t;
     PlayerList pList;
     Calculate cal;
@@ -415,13 +443,45 @@ int main() {
     int *purseArray = t.getPurse();
     cout << "Initial purse: [ " << purseArray[0] << ", " << purseArray[1] << ", "
          << purseArray[2] << ", " << purseArray[3] << " ]\n";
+  // Starting instructions
+  cout << "\n=== Welcome to the Cricket Player Auction Simulator ===\n";
+  cout << "Instructions:\n";
+  cout << "- Press team number (1: MI, 2: CSK, 3: RCB, 4: KKR) to bid.\n";
+  cout << "- Press 0 to stop bidding for the current player.\n";
+  cout << "- Press 5 to view current squads.\n\n";
+  cout << "1. Press 1 to START the auction.\n";
+  cout << "2. Press 2 to SEE the list of players coming up in the auction.\n";
+  cout << "Enter your choice: ";
 
-    // Run auction for up to 20 players (or fewer if less available)
-    int nPlayers = pList.playerList.size();
-    int auctionCount = (nPlayers < 20) ? nPlayers : 20;
-    for (int i = 0; i < auctionCount; i++) {
-        Auction::bidding(*pList.playerList[i], t, cal);
+  int choice;
+  cin >> choice;
+
+  if (choice == 2) {
+      cout << "\nList of Players in the Auction:\n";
+      for (const auto& p : pList.playerList) {
+        std::cout << p->name << " - ₹" << p->basePrice << " Lakhs" << std::endl;
     }
+        // 🔀 Shuffle player list for the auction
+    std::random_device rd;
+    std::mt19937 g(rd());
+    shuffle(pList.playerList.begin(), pList.playerList.end(), g);
+      cout << "\nNow press 1 to start the auction: ";
+      cin >> choice;
+  }
+
+  if (choice != 1) {
+    cout << "Invalid choice. Please enter 1 to start the auction: ";
+    cin >> choice;
+  }
+
+  
+
+    // Proceed to auction each player...
+      // Run auction for up to 20 players
+      int auctionCount = min((int)pList.playerList.size(), 20);
+      for (int i = 0; i < auctionCount; i++) {
+          Auction::bidding(*pList.playerList[i], t, cal);
+      }
 
     cout << "\nTeam Squads: \n";
     t.printSquad(1);
