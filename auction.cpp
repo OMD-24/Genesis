@@ -444,7 +444,7 @@ int main() {
     cout << "Initial purse: [ " << purseArray[0] << ", " << purseArray[1] << ", "
          << purseArray[2] << ", " << purseArray[3] << " ]\n";
   // Starting instructions
-  cout << "\n=== Welcome to the Cricket Player Auction Simulator ===\n";
+  cout << "\n=== Welcome to the 'APL Auction 2025' ===\n";
   cout << "Instructions:\n";
   cout << "- Press team number (1: MI, 2: CSK, 3: RCB, 4: KKR) to bid.\n";
   cout << "- Press 0 to stop bidding for the current player.\n";
